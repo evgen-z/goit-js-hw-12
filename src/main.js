@@ -64,11 +64,10 @@ const searchSubmit = async event => {
 
     if (data.totalHits > 15) {
       loadMoreBtn.style.display = 'block';
-    loadMoreBtn.addEventListener('click', loadMoreClick);
+      loadMoreBtn.addEventListener('click', loadMoreClick);
     }
 
     gallery.innerHTML = renderGallery(data.hits);
-    
 
     if (!lightbox) {
       lightbox = new SimpleLightbox('.gallery a');
@@ -84,13 +83,10 @@ const searchSubmit = async event => {
 searchForm.addEventListener('submit', searchSubmit);
 
 const loadMoreClick = async () => {
-  
   try {
     currentPage++;
 
     const { data } = await searchPixabay(searchQuery, currentPage);
-
-    
 
     gallery.insertAdjacentHTML('beforeend', renderGallery(data.hits));
     lightbox.refresh();
@@ -115,8 +111,6 @@ const loadMoreClick = async () => {
     console.log(err);
   }
 };
-
-
 
 const scroll = () => {
   const { height: cardHeight } =
