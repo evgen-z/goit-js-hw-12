@@ -95,7 +95,7 @@ const loadMoreClick = async () => {
     gallery.insertAdjacentHTML('beforeend', renderGallery(data.hits));
     lightbox.refresh();
     scroll();
-    if (currentPage * 85 >= data.totalHits) {
+    if (currentPage * 15 >= data.totalHits) {
       iziToast.info({
         title: '',
         message: "We're sorry, but you've reached the end of search results.",
