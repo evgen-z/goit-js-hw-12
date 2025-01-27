@@ -13,6 +13,7 @@ const loadMoreBtn = document.querySelector('.load-more-button');
 
 let lightbox;
 let currentPage = 1;
+let searchQuery = '';
 
 loader.style.display = 'none';
 loadMoreBtn.style.display = 'none';
@@ -21,9 +22,11 @@ const searchSubmit = async event => {
   try {
     event.preventDefault();
 
-    const searchQuery = event.currentTarget.elements.query.value.trim();
+    searchQuery = event.currentTarget.elements.query.value.trim();
 
     gallery.innerHTML = '';
+
+    currentPage = 1;
 
     if (searchQuery === '') {
       iziToast.warning({
@@ -38,7 +41,7 @@ const searchSubmit = async event => {
       return;
     }
     loader.style.display = 'block';
-
+    loadMoreBtn.style.display = 'none';
     const { data } = await searchPixabay(searchQuery, currentPage);
 
     if (data.total === 0) {
@@ -53,13 +56,19 @@ const searchSubmit = async event => {
 
       gallery.innerHTML = '';
       loader.style.display = 'none';
+      loadMoreBtn.style.display = 'none';
       searchForm.reset();
 
       return;
     }
 
+    if (data.totalHits > 15) {
+      loadMoreBtn.style.display = 'block';
+    loadMoreBtn.addEventListener('click', loadMoreClick);
+    }
+
     gallery.innerHTML = renderGallery(data.hits);
-    loadMoreBtn.style.display = 'block';
+    
 
     if (!lightbox) {
       lightbox = new SimpleLightbox('.gallery a');
@@ -75,14 +84,20 @@ const searchSubmit = async event => {
 searchForm.addEventListener('submit', searchSubmit);
 
 const loadMoreClick = async () => {
-  const query = searchForm.elements.query.value.trim();
+  
   try {
     currentPage++;
 
-    const { data } = await searchPixabay(query, currentPage);
+    const { data } = await searchPixabay(searchQuery, currentPage);
 
-    if (currentPage * 15 >= data.totalHits) {
-      iziToast.error({
+    
+
+    gallery.insertAdjacentHTML('beforeend', renderGallery(data.hits));
+    lightbox.refresh();
+    scroll();
+    if (currentPage * 85 >= data.totalHits) {
+      iziToast.info({
+        title: '',
         message: "We're sorry, but you've reached the end of search results.",
         position: 'topRight',
         backgroundColor: '#EF4040',
@@ -96,16 +111,12 @@ const loadMoreClick = async () => {
 
       return;
     }
-
-    gallery.insertAdjacentHTML('beforeend', renderGallery(data.hits));
-
-    scroll();
   } catch (err) {
     console.log(err);
   }
 };
 
-loadMoreBtn.addEventListener('click', loadMoreClick);
+
 
 const scroll = () => {
   const { height: cardHeight } =

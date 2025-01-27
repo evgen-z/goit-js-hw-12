@@ -8,7 +8,7 @@ export const searchPixabay = (searchQuery, currentPage) => {
     orientation: 'horizontal',
     safesearch: 'true',
     page: currentPage,
-    per_page: '15',
+    per_page: '85',
   });
 
   return axios.get(`https://pixabay.com/api/?${searchParams}`);
